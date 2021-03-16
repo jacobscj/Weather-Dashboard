@@ -9,7 +9,7 @@ var searchEl = $("#searchButton");
 var clearHistoryEl = $("#clearHistory");
 var displayHistoryEl = $("#history");
 var cityNameEl = $("#cityName");
-var pictureEl = $("#picture");
+var pictureEl = $("#picture"); 
 var temperatureEl = $("#temperature");
 var humidityEl = $("#humidity");
 var windSpeedEl = $("#windSpeed");
@@ -18,6 +18,11 @@ var city = "";
 
 $("#searchButton").on("click", function (){
   var searchedCity = citySearchEl.val();
+  cityNameEl.empty()
+  temperatureEl.empty()
+  humidityEl.empty()
+  windSpeedEl.empty()
+  uvIndexEl.empty()
   getCurrentWeather(searchedCity)
 })
 
@@ -29,22 +34,38 @@ function getCurrentWeather(city) {
   }).then(function(response) {
     console.log(response);
     cityNameEl.append(response.name)
-    temperatureEl.append(response.main.temp + " °F")
-    uvIndexEl.append(getUvIndex(response.coord.lat, response.coord.lon))
-  });
+    temperatureEl.append("Temperature: " + response.main.temp + " °F")
+    humidityEl.append("Humidity: " + response.main.humidity)
+    windSpeedEl.append("Wind Speed: " + response.wind.speed + " MPH")
+    getUvIndex(response.coord.lat, response.coord.lon)
+  })
 }
 
-function getUvIndex(lat, lon){
+function getUvIndex(lat, lon) {
+  console.log("get UV index call")
   var uvUrl = "http://api.openweathermap.org/data/2.5/uvi?lat=" + lat + "&lon=" + lon + "&appid=" + apiKey;
   $.ajax({
     url:uvUrl,
     method: "GET",
   }).then(function(response) {
-    console.log(response.value)
+    console.log(response)
+    uvIndexEl.append("UV Index: " + response.value)
   })
 }
 
-getCurrentWeather();
+function getForecast (city) {
+  var forecastUrl = "api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + apiKey + "&units=emperial";
+  $.ajax({
+    url: forecastUrl,
+    method: "GET",
+  }).then(function(response) {
+    console.log(response)
+  })
+} 
+
+getCurrentWeather("Raleigh");
+
 })
+
 
 
